@@ -71,7 +71,7 @@ type Gattt struct {
 	Mac        string
 }
 
-func (g Gattt) Write() error {
+func (g Gattt) Write(timeout time.Duration) error {
 	args := []string{
 		"-i", g.Interface,
 		fmt.Sprintf("--device=%s", g.Mac),
@@ -84,11 +84,11 @@ func (g Gattt) Write() error {
 
 	cmd := exec.Command(g.GatttolBin, args...)
 
-	_, err := TimedGatttExec(cmd, GatttTimeout, GatttNotificationRead)
+	_, err := TimedGatttExec(cmd, timeout, GatttWriteSuccess)
 	return err
 }
 
-func (g Gattt) Read() ([]string, error) {
+func (g Gattt) Read(timeout time.Duration) ([]string, error) {
 	args := []string{
 		"-i", g.Interface,
 		fmt.Sprintf("--device=%s", g.Mac),
@@ -101,11 +101,11 @@ func (g Gattt) Read() ([]string, error) {
 
 	cmd := exec.Command(g.GatttolBin, args...)
 
-	res, err := TimedGatttExec(cmd, GatttTimeout, GatttNotificationRead)
+	res, err := TimedGatttExec(cmd, timeout, GatttNotificationRead)
 	return res, err
 }
 
-func (g Gattt) Save() error {
+func (g Gattt) Save(timeout time.Duration) error {
 	args := []string{
 		"-i", g.Interface,
 		fmt.Sprintf("--device=%s", g.Mac),
@@ -118,11 +118,11 @@ func (g Gattt) Save() error {
 
 	cmd := exec.Command(g.GatttolBin, args...)
 
-	_, err := TimedGatttExec(cmd, GatttTimeout, GatttNotificationRead)
+	_, err := TimedGatttExec(cmd, timeout, GatttNotificationRead)
 	return err
 }
 
-func (g Gattt) Reset() error {
+func (g Gattt) Reset(timeout time.Duration) error {
 	args := []string{
 		"-i", g.Interface,
 		fmt.Sprintf("--device=%s", g.Mac),
@@ -135,11 +135,11 @@ func (g Gattt) Reset() error {
 
 	cmd := exec.Command(g.GatttolBin, args...)
 
-	_, err := TimedGatttExec(cmd, GatttTimeout, GatttNotificationRead)
+	_, err := TimedGatttExec(cmd, timeout, GatttNotificationRead)
 	return err
 }
 
-var GatttTimeout = time.Duration(5 * time.Second)
+var GatttTimeout = time.Duration(1 * time.Second)
 
 const (
 	GatttWriteSuccess     = "Characteristic value was written successfully"
@@ -177,7 +177,7 @@ func TimedGatttExec(cmd *exec.Cmd, timeout time.Duration, waitFor string) ([]str
 	}()
 
 	select {
-	case <-time.After(3 * time.Second):
+	case <-time.After(timeout):
 		log.Infof("Stopping gatttool upon timeout")
 		cmd.Process.Kill()
 		return result, GatttTimeoutError{}

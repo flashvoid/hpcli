@@ -48,6 +48,7 @@ func main() {
 	firstOp := flag.String("op1", "",
 		fmt.Sprintf("Operand for read|write commands\n\t%s", getMapKeys(OpCodes)))
 	secondOp := flag.String("op2", "", "Value for write command (auto for write curr-time)")
+	timeout := flag.Int("timeout", 5, "Timeout for bluetooth call")
 
 	flag.Parse()
 
@@ -86,13 +87,13 @@ func main() {
 
 	switch *command {
 	case "read":
-		result, err = g.Read()
+		result, err = g.Read(time.Duration(*timeout) * time.Second)
 	case "write":
-		err = g.Write()
+		err = g.Write(time.Duration(*timeout) * time.Second)
 	case "save":
-		err = g.Save()
+		err = g.Save(time.Duration(*timeout) * time.Second)
 	case "reset":
-		err = g.Reset()
+		err = g.Reset(time.Duration(*timeout) * time.Second)
 	}
 	if err != nil {
 		log.Infof("Error %s", err.Error())
