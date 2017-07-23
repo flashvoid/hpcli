@@ -118,7 +118,7 @@ func (g Gattt) Save(timeout time.Duration) error {
 
 	cmd := exec.Command(g.GatttolBin, args...)
 
-	_, err := TimedGatttExec(cmd, timeout, GatttNotificationRead)
+	_, err := TimedGatttExec(cmd, timeout, GatttWriteSuccess)
 	return err
 }
 
@@ -135,7 +135,7 @@ func (g Gattt) Reset(timeout time.Duration) error {
 
 	cmd := exec.Command(g.GatttolBin, args...)
 
-	_, err := TimedGatttExec(cmd, timeout, GatttNotificationRead)
+	_, err := TimedGatttExec(cmd, timeout, GatttWriteSuccess)
 	return err
 }
 
